@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Velhum's first multiplayer game</title>
+  <style>
+    body,
+    html {
+      height: 100vh;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    canvas#screen {
+      border: 10px solid #AAA;
+      width: 400px;
+      height: 400px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      image-rendering: -moz-crisp-edges;
+    }
+  </style>
+</head>
+<body>
+  <canvas width="10" height="10" id="screen"></canvas>
+  <script>
+    const screen = document.getElementById('screen');
+    const context = screen.getContext('2d');
+    const currentPlayerId = 'player1';
+
+    function createGame(){
+
+      const state = {
+        players: {
+          'player1': {x: 1, y: 1},
+          'player2': {x: 9, y: 9},
+        },
+        fruits: {
+          'fruit1': {x: 3, y: 1}
+        }
+      }
+
+      function movePlayer(command){
+        console.log(`Moving ${command.playerId} with ${command.keyPressed}`);
+      }
+
+      return {
+        state,
+        movePlayer
+      }
+
+    }
+    
+    function createKeyboardListener(){
+
+      state = {
+        observers: []
+      }
+
+      function subscribe(observerFunction){
+        state.observers.push(observerFunction);
+      }
+
+      function notifyAll(command){
+        console.log(`Notifying ${state.observers.length} observers`)
+        for (const observerFunction of state.observers){
+          observerFunction(command)
+        }
+      }
+
+      function handleKeydown(event){
+        const keyPressed = event.key;
+  
+        const command = {
+          playerId: 'player1',
+          keyPressed
+        };
+  
+        notifyAll(command);
+  
+      }
+
+      document.addEventListener('keydown', handleKeydown);
+
+      return {
+        subscribe
+      }
+  
+    }
+
+    function renderScreen(){
+
+      context.clearRect(0, 0, 10, 10);
+
+      for(const playerId in game.state.players){
+        const player = game.state.players[playerId];
+        context.fillStyle = 'black';
+        context.fillRect(player.x, player.y, 1, 1);
+      }
+
+      for(const fruitId in game.state.fruits){
+        const fruit = game.state.fruits[fruitId];
+        context.fillStyle = 'green';
+        context.fillRect(fruit.x, fruit.y, 1, 1);
+      }
+
+      requestAnimationFrame(renderScreen)
+    }
+
+    const game = createGame();
+    const keyboardListener = createKeyboardListener();
+    keyboardListener.subscribe(game.movePlayer)
+
+    renderScreen()
+
+
+  </script>
+</body>
+</html>
