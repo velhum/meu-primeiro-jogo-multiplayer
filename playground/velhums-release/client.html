@@ -35,6 +35,32 @@
     const screen = document.getElementById('screen');
     const context = screen.getContext('2d');
     const currentPlayerId = 'player1';
+    const acceptedMoves = {
+      ArrowUp(player){
+        console.log('acceptedMoves -> Mone up, player.y = ', player);
+        player.y - 1 >= 0
+          ? player.y = player.y - 1
+          : console.log('Bateu na borda superior')
+        },
+      ArrowRight(player){
+        console.log('acceptedMoves -> Mone right')
+        player.x + 1 < screen.width
+          ? player.x = player.x + 1
+          : console.log('Bateu na borda direita')
+      },
+      ArrowDown(player){
+        console.log('acceptedMoves -> Mone down')
+        player.y + 1 < screen.height
+          ? player.y = player.y + 1
+          : console.log('Bateu na borda direita')
+      },
+      ArrowLeft(player){
+        console.log('acceptedMoves -> Mone left')
+        player.x - 1 >= 0
+          ? player.x = player.x - 1
+          : console.log('Bateu na borda esquerda')
+      },
+    }
 
     function createGame(){
 
@@ -49,7 +75,14 @@
       }
 
       function movePlayer(command){
-        console.log(`Moving ${command.playerId} with ${command.keyPressed}`);
+        const keyPressed = command.keyPressed;
+        const player = state.players[command.playerId];
+        console.log(`game.movePlayer() -> Moving ${player} with ${keyPressed}`);
+
+        const moveFunction = acceptedMoves[keyPressed];
+        if(moveFunction){
+          moveFunction(player);
+        }
       }
 
       return {
@@ -70,7 +103,7 @@
       }
 
       function notifyAll(command){
-        console.log(`Notifying ${state.observers.length} observers`)
+        console.log(`createKeyboardListener() -> Notifying ${state.observers.length} observers`)
         for (const observerFunction of state.observers){
           observerFunction(command)
         }
@@ -78,7 +111,6 @@
 
       function handleKeydown(event){
         const keyPressed = event.key;
-  
         const command = {
           playerId: 'player1',
           keyPressed
