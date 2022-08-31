@@ -74,6 +74,22 @@
         }
       }
 
+      function addPlayer(command){
+        const playerId =  command.playerId;
+        const playerX =  command.playerX;
+        const playerY =  command.playerY;
+
+        state.players[playerId] = {
+          x: playerX,
+          y: playerY
+        }
+      }
+
+      function removePlayer(command){
+        const playerId = command.playerId;
+        delete state.players[playerId];
+      }
+
       function movePlayer(command){
         const keyPressed = command.keyPressed;
         const player = state.players[command.playerId];
@@ -87,6 +103,8 @@
 
       return {
         state,
+        addPlayer,
+        removePlayer,
         movePlayer
       }
 
